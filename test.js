@@ -133,7 +133,7 @@ let test = () => {
 
   testEqual(
     moment("2024-12-01T07:00:00Z").diff("2023-12-01T07:00:00Z", "years"),
-    moment("2024-12-01T07:00:00Z").diff("2023-12-01T07:00:00Z", "years")
+    gnoment("2024-12-01T07:00:00Z").diff("2023-12-01T07:00:00Z", "years")
   );
 
   testHeader("Date Arithmetic Tests - subtract");
