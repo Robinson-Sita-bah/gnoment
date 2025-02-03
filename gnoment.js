@@ -1,4 +1,5 @@
-// gnoment 🧙‍♂️🍄 - Internationalized date wrapper to look similar to moment.js to ease conversions
+/* © 2017-2025 Booz Allen Hamilton Inc. All Rights Reserved. */
+// gnoment 🧙‍♂️🍄 - Wrapper using internationalized date & date-fns to look similar to moment.js to ease conversions
 // https://react-spectrum.adobe.com/internationalized/date/ZonedDateTime.html
 
 import {
@@ -17,54 +18,51 @@ import {
   ZonedDateTime,
 } from "@internationalized/date";
 
-let gnomentToCalendarDate = (gnoment) => {
-  return gnoment.toCalendarDate();
-};
+import {
+  differenceInDays,
+  differenceInMonths,
+  differenceInWeeks,
+  differenceInYears,
+} from "date-fns";
 
-let gnomentToCalendarDateTime = (gnoment) => {
-  return gnoment.toCalendarDateTime();
-};
+function gnomentToCalendarDate(g) {
+  return g.toCalendarDate();
+}
 
-let gnomentToZonedDateTime = (gnoment) => {
-  return gnoment.toZonedDateTime();
-};
+function gnomentToCalendarDateTime(g) {
+  return g.toCalendarDateTime();
+}
+
+function gnomentToZonedDateTime(g) {
+  return g.toZonedDateTime();
+}
 
 // This function is used to parse a date string in a flexible way, and should always return a ZonedDateTime object.
 const parseFlexibleDate = (input, timeZone = "UTC") => {
-  console.log(input);
+  let res;
   if (input.length === 10) {
     // If the input is exactly "YYYY-MM-DD", assume it's a date without time
-    // console.log('parseDate')
     let d = parseDate(input);
     d = toZoned(d, timeZone);
     d = d.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-    return d;
+    res = d;
   } else if (
     input.includes("Z") //||
     // input.includes("+") ||
     // input.includes("-")
   ) {
     // If it has a 'Z' (UTC) or timezone offset, treat as absolute timestamp
-    // console.log('parseAbsolute');
-    // return parseAbsolute(input, timeZone);
-    return parseAbsolute(input, timeZone);
+    res = parseAbsolute(input, timeZone);
   } else {
     // Otherwise, assume it's a local date-time string
     // TODO - Need to improve
+    let inputUpdated = input;
     if (input.length > 11 && input[10] === " ")
-      input = input.substring(0, 10) + "T" + input.substring(11);
-    // console.log(input);
-    let d = parseDateTime(input);
-    return toZoned(d, timeZone);
+      inputUpdated = `${input.substring(0, 10)}T${input.substring(11)}`;
+    const d = parseDateTime(inputUpdated);
+    res = toZoned(d, timeZone);
   }
-};
-
-function gnoment(d) {
-  return new Gnoment(d);
-}
-
-gnoment.unix = (d) => {
-  return new Gnoment(new Date(d * 1000));
+  return res;
 };
 
 gnoment.tz = (date, tz) => {
@@ -129,15 +127,14 @@ class Gnoment {
   }
 
   normalize(s) {
-    // return s;
-    s = s.replace(/\+00:00\[UTC\]/g, "Z");
-    s = s.replace(/\[.*?\]/g, "");
-    return s;
+    let sUpdated = s;
+    sUpdated = s.replace(/\+00:00\[UTC\]/g, "Z");
+    sUpdated = s.replace(/\[.*?\]/g, "");
+    return sUpdated;
   }
 
   // Node specific
   [Symbol.for("nodejs.util.inspect.custom")]() {
-    // return `${this.toString()}`;
     return `Gnoment<${this.normalize(String(this.zonedDateTime))}>`;
   }
 
@@ -189,8 +186,20 @@ class Gnoment {
   };
 
   //Date Calcs
-  diff = () => {
-    //Code here
+  diff = (date2, unit) => {
+    let res;
+    if (unit === "years") {
+      res = differenceInYears(this.zonedDateTime.toDate(), new Date(date2));
+    } else if (unit === "months") {
+      res = differenceInMonths(this.zonedDateTime.toDate(), new Date(date2));
+    }
+    if (unit === "weeks") {
+      res = differenceInWeeks(this.zonedDateTime.toDate(), new Date(date2));
+    }
+    if (unit === "days") {
+      res = differenceInDays(this.zonedDateTime.toDate(), new Date(date2));
+    }
+    return res;
   };
 
   // moment units =>zonedDatetime units
@@ -202,51 +211,55 @@ class Gnoment {
   };
 
   unitLookup = (momentUnit) => {
-    if (momentUnit in this.unitLookupTable)
-      return this.unitLookupTable[momentUnit];
-    else return momentUnit;
+    return momentUnit in this.unitLookupTable
+      ? this.unitLookupTable[momentUnit]
+      : momentUnit;
   };
 
   add = (duration, unit) => {
-    let unitTemp = this.unitLookup(unit);
+    const unitTemp = this.unitLookup(unit);
     return gnoment(this.zonedDateTime.add({ [unitTemp]: duration }));
   };
 
   subtract = (duration, unit) => {
-    let unitTemp = this.unitLookup(unit);
+    const unitTemp = this.unitLookup(unit);
     return gnoment(this.zonedDateTime.subtract({ [unitTemp]: duration }));
   };
 
   startOf = (unit) => {
+    let res;
     if (unit === "year") {
       let temp = startOfYear(this.zonedDateTime);
       temp = temp.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-      return gnoment(temp);
+      res = gnoment(temp);
     } else if (unit === "month") {
       let temp = startOfMonth(this.zonedDateTime);
       temp = temp.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-      return gnoment(temp);
+      res = gnoment(temp);
     } else if (unit === "day") {
       let temp = this.zonedDateTime;
       temp = temp.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-      return gnoment(temp);
+      res = gnoment(temp);
     }
+    return res;
   };
 
   endOf = (unit) => {
+    let res;
     if (unit === "year") {
       let temp = endOfYear(this.zonedDateTime);
       temp = temp.set({ hour: 23, minute: 59, second: 59, millisecond: 999 });
-      return gnoment(temp);
+      res = gnoment(temp);
     } else if (unit === "month") {
       let temp = endOfMonth(this.zonedDateTime);
       temp = temp.set({ hour: 23, minute: 59, second: 59, millisecond: 999 });
-      return gnoment(temp);
+      res = gnoment(temp);
     } else if (unit === "day") {
       let temp = this.zonedDateTime;
       temp = temp.set({ hour: 23, minute: 59, second: 59, millisecond: 999 });
-      return gnoment(temp);
+      res = gnoment(temp);
     }
+    return res;
   };
 
   tz = (timezone) => {
@@ -262,11 +275,12 @@ class Gnoment {
     let timezoneShort = "";
 
     // Helper function to get timezone offset in format ±HH:mm
-    const getTimezoneOffset = (date, timezone) => {
+    const getTimezoneOffset = () => {
       return this.convertOffsetToHoursMinutes(this.zonedDateTime.offset);
     };
-    if (!timezone) {
-      timezone = this.zonedDateTime.timeZone;
+    let tzUpdated = timezone;
+    if (!tzUpdated) {
+      tzUpdated = this.zonedDateTime.timeZone;
       const parts = new Intl.DateTimeFormat("en-US", {
         timeZone: this.zonedDateTime.timeZone,
         timeZoneName: "short",
@@ -275,9 +289,8 @@ class Gnoment {
       // Extract the part corresponding to the timezone name
       const tzNamePart = parts.find((part) => part.type === "timeZoneName");
       timezoneShort = tzNamePart ? tzNamePart.value : "";
-      // timezone = this.zonedDateTime.timeZone;
     }
-    const timeOptions = timezone ? { timeZone: timezone } : {};
+    const timeOptions = tzUpdated ? { timeZone: tzUpdated } : {};
     const formatTokens = {
       // Year
       YYYY: d.toLocaleString("en-US", { ...timeOptions, year: "numeric" }),
@@ -364,10 +377,9 @@ class Gnoment {
         .toLowerCase(),
 
       // Timezone
-      ZZ: getTimezoneOffset(d, timezone).replace(":", ""),
-      Z: getTimezoneOffset(d, timezone),
+      ZZ: getTimezoneOffset(d, tzUpdated).replace(":", ""),
+      Z: getTimezoneOffset(d, tzUpdated),
       z: timezoneShort || Intl.DateTimeFormat().resolvedOptions().timeZone,
-      // 'z': d.toLocaleString('en-US', { timeZone: timezone, timeZoneName: 'short' }),
     };
 
     // Replace tokens with actual values
@@ -377,6 +389,14 @@ class Gnoment {
     );
   };
 }
+
+function gnoment(d) {
+  return new Gnoment(d);
+}
+
+gnoment.unix = (d) => {
+  return new Gnoment(new Date(d * 1000));
+};
 
 export {
   gnoment,

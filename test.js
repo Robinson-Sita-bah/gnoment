@@ -115,6 +115,27 @@ let test = () => {
     gnoment("2025-01-23T07:00:00Z").isAfter(gnoment("2025-01-22T07:00:00Z"))
   );
 
+  testHeader("Date Arithmetic Tests - diff");
+  testEqual(
+    moment("2025-07-20T07:00:00Z").diff("2025-07-18T07:00:00Z", "days"),
+    gnoment("2025-07-20T07:00:00Z").diff("2025-07-18T07:00:00Z", "days")
+  );
+
+  testEqual(
+    moment("2025-12-20T07:00:00Z").diff("2025-07-18T07:00:00Z", "weeks"),
+    gnoment("2025-12-20T07:00:00Z").diff("2025-07-18T07:00:00Z", "weeks")
+  );
+
+  testEqual(
+    moment("2025-12-01T07:00:00Z").diff("2025-07-01T07:00:00Z", "months"),
+    gnoment("2025-12-01T07:00:00Z").diff("2025-07-01T07:00:00Z", "months")
+  );
+
+  testEqual(
+    moment("2024-12-01T07:00:00Z").diff("2023-12-01T07:00:00Z", "years"),
+    moment("2024-12-01T07:00:00Z").diff("2023-12-01T07:00:00Z", "years")
+  );
+
   testHeader("Date Arithmetic Tests - subtract");
   testEqual(
     String(moment("2025-01-23T07:00:00Z").subtract(1, "day")),
@@ -164,30 +185,12 @@ let test = () => {
     String(moment("2025-01-23T07:00:00Z").endOf("day")),
     String(gnoment("2025-01-23T07:00:00Z").endOf("day"))
   );
+
+  testHeader("Gnoment with UTC param but no direct param");
+  testEqual(
+    String(moment.utc("2023-07-18T18:00:00Z")),
+    String(gnoment.utc("2023-07-18T18:00:00Z"))
+  );
 };
 
 test();
-
-// console.log(gnoment(new Date()))
-// console.log('after test')
-// console.log(moment.tz(inputs[0],'America/Los_Angeles'));
-// //console.log(gnoment(inputs[0]).format('YYYY-MM-DD HH:mm:ss [GMT]ZZ'),'America/Los_Angeles');
-// console.log(gnoment.tz(inputs[0],'America/Los_Angeles'));
-
-// console.log(moment.unix(unixinputs[0]));
-// console.log(moment.unix(1738330152))
-
-// console.log(moment)
-// console.log(gnoment)
-
-// console.log(moment(inputs[0]))
-// console.log(moment(inputs[0]).utc())
-
-// console.log(moment(inputs[1]))
-// console.log(moment(inputs[1]).utc())
-
-// console.log(gnoment(inputs[0]))
-// console.log(gnoment(inputs[0]).utc())
-
-// console.log(gnoment(inputs[1]))
-// console.log(gnoment(inputs[1]).utc())
