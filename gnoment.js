@@ -16,6 +16,7 @@ import {
   startOfYear,
   endOfYear,
   ZonedDateTime,
+  toCalendarDate,
 } from "@internationalized/date";
 
 import {
@@ -25,16 +26,47 @@ import {
   differenceInYears,
 } from "date-fns";
 
-function gnomentToCalendarDate(g) {
-  return g.toCalendarDate();
+export function gnomentToCalendarDate(g) {
+  return gnoment(g).toCalendarDate();
 }
 
-function gnomentToCalendarDateTime(g) {
-  return g.toCalendarDateTime();
+export function calendarDateToGnoment(g) {
+  return gnoment(g);
 }
 
-function gnomentToZonedDateTime(g) {
-  return g.toZonedDateTime();
+export function rangeValueToGnomentRange(range) {
+  let startDate = null;
+  let endDate = null;
+
+  if (range) {
+    startDate = calendarDateToGnoment(range.start);
+    endDate = calendarDateToGnoment(range.end);
+  }
+
+  return {
+    startDate,
+    endDate,
+  };
+}
+
+export function gnomentRangeToRangeValue(startDate, endDate) {
+  let rangeValue = null;
+
+  const start = gnomentToCalendarDate(startDate);
+  const end = gnomentToCalendarDate(endDate);
+
+  if (start && end) {
+    rangeValue = {
+      start,
+      end,
+    };
+  }
+
+  return rangeValue;
+}
+
+export function gnomentToCalendarDateTime(g) {
+  return gnoment(g).toCalendarDateTime();
 }
 
 // This function is used to parse a date string in a flexible way, and should always return a ZonedDateTime object.
@@ -76,15 +108,13 @@ gnoment.utc = (date) => {
 
 class Gnoment {
   constructor(date) {
-    if (date === undefined) {
+    if (!date) {
       this.zonedDateTime = now(getLocalTimeZone());
     } else if (typeof date === "string") {
       const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      // console.log('localTimeZone:',localTimeZone)
       const dateObj = parseFlexibleDate(date, localTimeZone);
       this.zonedDateTime = toCalendarDateTime(dateObj);
       this.zonedDateTime = toZoned(this.zonedDateTime, localTimeZone);
-      // console.log('this.zonedDateTime:',this.zonedDateTime);
     } else if (date instanceof Date) {
       const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const dateTime = new CalendarDateTime(
@@ -106,7 +136,7 @@ class Gnoment {
   }
 
   toCalendarDate() {
-    return this.zonedDateTime.toCalendarDate();
+    return toCalendarDate(this.zonedDateTime);
   }
 
   toCalendarDateTime() {
@@ -388,7 +418,7 @@ class Gnoment {
   };
 }
 
-function gnoment(d) {
+export function gnoment(d) {
   return new Gnoment(d);
 }
 
@@ -396,10 +426,8 @@ gnoment.unix = (d) => {
   return new Gnoment(new Date(d * 1000));
 };
 
-export {
-  gnoment,
-  gnomentToCalendarDate,
-  gnomentToCalendarDateTime,
-  gnomentToZonedDateTime,
+gnoment.isGnoment = (date) => {
+  return date instanceof Gnoment;
 };
+
 export default gnoment;
