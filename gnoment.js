@@ -192,11 +192,9 @@ class Gnoment {
       res = differenceInYears(this.zonedDateTime.toDate(), new Date(date2));
     } else if (unit === "months") {
       res = differenceInMonths(this.zonedDateTime.toDate(), new Date(date2));
-    }
-    if (unit === "weeks") {
+    } else if (unit === "weeks") {
       res = differenceInWeeks(this.zonedDateTime.toDate(), new Date(date2));
-    }
-    if (unit === "days") {
+    } else if (unit === "days") {
       res = differenceInDays(this.zonedDateTime.toDate(), new Date(date2));
     }
     return res;
