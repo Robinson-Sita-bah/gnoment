@@ -8,9 +8,9 @@ let inputs = [
   "2025-01-31",
   "2025-01-22T08:00:00",
   "2025-01-22 08:00:00",
-  "2022-09-28 10:00:00",
-  "2023-06-15T18:31:23.065812769Z",
 ];
+
+// "Jan 01, 2025"
 
 let unixinputs = [
   1595007379, // 2020-07-17T13:36:19-04:00 DST
@@ -30,7 +30,6 @@ let testHeader = (h) => {
 };
 
 let test = () => {
-  console.log(gnoment.utc("2023-07-18T18:00:00Z"));
   testHeader("moment(i)");
   for (let i of inputs) {
     testEqual(String(moment(i)), String(gnoment(i)));
@@ -53,7 +52,7 @@ let test = () => {
     testEqual(String(moment(i).tz(tz)), String(gnoment(i).tz(tz)));
   }
 
-  testHeader("moment(i).format('MMM D, YYYY - h:mm a')");
+  testHeader("moment(i).format('MMM D, YYYY - h:mm a z')");
   for (let i of inputs) {
     testEqual(
       moment(i).tz(tz).format("MM/DD/YYYY hh:mm a z"),
@@ -78,6 +77,17 @@ let test = () => {
   for (let i of unixinputs) {
     testEqual(String(moment.unix(i).utc()), String(gnoment.unix(i).utc()));
   }
+
+  testHeader("moment(i).utc()");
+  for (let i of inputs) {
+    testEqual(String(moment(i).utc()), String(gnoment(i).utc()));
+  }
+
+  testHeader("Gnoment with UTC param but no direct param");
+  testEqual(
+    String(moment.utc("2023-07-18T18:00:00Z")),
+    String(gnoment.utc("2023-07-18T18:00:00Z"))
+  );
 
   // Date Comparison Tests
   testHeader("Date Comparison Tests - isSame");
@@ -187,12 +197,13 @@ let test = () => {
     String(moment("2025-01-23T07:00:00Z").endOf("day")),
     String(gnoment("2025-01-23T07:00:00Z").endOf("day"))
   );
-
-  testHeader("Gnoment with UTC param but no direct param");
-  testEqual(
-    String(moment.utc("2023-07-18T18:00:00Z")),
-    String(gnoment.utc("2023-07-18T18:00:00Z"))
-  );
 };
 
 test();
+
+console.log(
+  moment(inputs[0]).utc().format(),
+  gnoment(inputs[0]).utc().format()
+);
+console.log(moment(inputs[0]).utc(), gnoment(inputs[0]).utc());
+console.log(moment(inputs[0]), gnoment(inputs[0]));

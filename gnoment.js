@@ -165,7 +165,7 @@ class Gnoment {
 
   // Node specific
   [Symbol.for("nodejs.util.inspect.custom")]() {
-    return `Gnoment<${this.normalize(String(this.zonedDateTime))}>`;
+    return `Gnoment<${this.format()}>`;
   }
 
   toString() {
@@ -297,8 +297,13 @@ class Gnoment {
 
   format = (format, timezone) => {
     // Create date object and handle timezone if provided
+    let tzUpdated = timezone;
+    let formatUpdated = format;
 
-    const date = this.zonedDateTime.toDate(timezone);
+    if (!formatUpdated) formatUpdated = "YYYY-MM-DDTHH:mm:ssZ";
+    if (!tzUpdated) tzUpdated = this.zonedDateTime.timeZone;
+
+    const date = this.zonedDateTime.toDate(tzUpdated);
     const d = new Date(date);
     let timezoneShort = "";
 
@@ -306,18 +311,14 @@ class Gnoment {
     const getTimezoneOffset = () => {
       return this.convertOffsetToHoursMinutes(this.zonedDateTime.offset);
     };
-    let tzUpdated = timezone;
-    if (!tzUpdated) {
-      tzUpdated = this.zonedDateTime.timeZone;
-      const parts = new Intl.DateTimeFormat("en-US", {
-        timeZone: this.zonedDateTime.timeZone,
-        timeZoneName: "short",
-      }).formatToParts(date);
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: tzUpdated,
+      timeZoneName: "short",
+    }).formatToParts(date);
 
-      // Extract the part corresponding to the timezone name
-      const tzNamePart = parts.find((part) => part.type === "timeZoneName");
-      timezoneShort = tzNamePart ? tzNamePart.value : "";
-    }
+    // Extract the part corresponding to the timezone name
+    const tzNamePart = parts.find((part) => part.type === "timeZoneName");
+    timezoneShort = tzNamePart ? tzNamePart.value : "";
     const timeOptions = tzUpdated ? { timeZone: tzUpdated } : {};
     const formatTokens = {
       // Year
@@ -406,12 +407,13 @@ class Gnoment {
 
       // Timezone
       ZZ: getTimezoneOffset(d, tzUpdated).replace(":", ""),
-      Z: getTimezoneOffset(d, tzUpdated),
+      Z: getTimezoneOffset(d, tzUpdated).replace("+0000", "Z"),
       z: timezoneShort || Intl.DateTimeFormat().resolvedOptions().timeZone,
+      // 'z': d.toLocaleString('en-US', { timeZone: timezone, timeZoneName: 'short' }),
     };
 
     // Replace tokens with actual values
-    return format.replace(
+    return formatUpdated.replace(
       /\[([^\]]+)\]|YYYY|YY|MMMM|MMM|MM|M|DD|D|dddd|ddd|HH|H|hh|h|mm|m|ss|s|SSS|A|a|ZZ|Z|z/g,
       (match, contents) => contents || formatTokens[match]
     );
