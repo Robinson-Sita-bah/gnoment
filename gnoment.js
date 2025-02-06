@@ -17,6 +17,7 @@ import {
   endOfYear,
   ZonedDateTime,
   toCalendarDate,
+  CalendarDate,
 } from "@internationalized/date";
 
 import {
@@ -25,13 +26,14 @@ import {
   differenceInWeeks,
   differenceInYears,
 } from "date-fns";
+import isNil from "lodash/isNil.js";
 
 export function gnomentToCalendarDate(g) {
-  return gnoment(g).toCalendarDate();
+  return !isNil(g) && gnoment(g).toCalendarDate();
 }
 
 export function calendarDateToGnoment(g) {
-  return gnoment(g);
+  return !isNil(g) && gnoment(g);
 }
 
 export function rangeValueToGnomentRange(range) {
@@ -128,6 +130,9 @@ class Gnoment {
       this.zonedDateTime = toZoned(dateTime, localTimeZone);
     } else if (date instanceof ZonedDateTime) {
       this.zonedDateTime = date;
+    } else if (date instanceof CalendarDate) {
+      const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      this.zonedDateTime = toZoned(date, localTimeZone);
     } else if (date instanceof Gnoment) {
       this.zonedDateTime = date.zonedDateTime;
     } else {
@@ -226,6 +231,10 @@ class Gnoment {
       res = differenceInWeeks(this.zonedDateTime.toDate(), new Date(date2));
     } else if (unit === "days") {
       res = differenceInDays(this.zonedDateTime.toDate(), new Date(date2));
+    }
+
+    if (isNil(res)) {
+      res = 0;
     }
     return res;
   };
@@ -333,7 +342,11 @@ class Gnoment {
 
       // Day
       DD: d.toLocaleString("en-US", { ...timeOptions, day: "2-digit" }),
+      Do: d
+        .toLocaleString("en-US", { ...timeOptions, day: "numeric" })
+        .concat("th"),
       D: d.toLocaleString("en-US", { ...timeOptions, day: "numeric" }),
+
       dddd: d.toLocaleString("en-US", { ...timeOptions, weekday: "long" }),
       ddd: d.toLocaleString("en-US", { ...timeOptions, weekday: "short" }),
 
@@ -413,8 +426,10 @@ class Gnoment {
     };
 
     // Replace tokens with actual values
+    formatUpdated = formatUpdated.replace("LL", "MMMM D, YYYY");
+    formatUpdated = formatUpdated.replace("ll", "MMM D, YYYY");
     return formatUpdated.replace(
-      /\[([^\]]+)\]|YYYY|YY|MMMM|MMM|MM|M|DD|D|dddd|ddd|HH|H|hh|h|mm|m|ss|s|SSS|A|a|ZZ|Z|z/g,
+      /\[([^\]]+)\]|YYYY|YY|MMMM|MMM|MM|M|DD|Do|D|dddd|ddd|HH|H|hh|h|mm|m|ss|s|SSS|A|a|ZZ|Z|z/g,
       (match, contents) => contents || formatTokens[match]
     );
   };

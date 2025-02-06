@@ -46,6 +46,51 @@ let test = () => {
     );
   }
 
+  testHeader("moment(i).format('ddd D')");
+  for (let i of inputs) {
+    testEqual(moment().format("ddd D"), gnoment().format("ddd D"));
+  }
+
+  testHeader("moment(i).format('ddd')");
+  for (let i of inputs) {
+    testEqual(moment().format("ddd"), gnoment().format("ddd"));
+  }
+  testHeader("moment(i).format('D')");
+  for (let i of inputs) {
+    testEqual(moment().format("D"), gnoment().format("D"));
+  }
+
+  testHeader("moment(i).format('dddd, MMMM D, YYYY')");
+  for (let i of inputs) {
+    testEqual(
+      moment().format("dddd, MMMM D, YYYY"),
+      gnoment().format("dddd, MMMM D, YYYY")
+    );
+  }
+
+  testHeader("moment(i).format('LL')");
+  for (let i of inputs) {
+    testEqual(moment().format("LL"), gnoment().format("LL"));
+  }
+
+  testHeader("moment(i).format('ll')");
+  for (let i of inputs) {
+    testEqual(moment().format("ll"), gnoment().format("ll"));
+  }
+
+  testHeader("moment(i).format('MMMM Do, YYYY')");
+  for (let i of inputs) {
+    testEqual(
+      moment().format("MMMM Do, YYYY"),
+      gnoment().format("MMMM Do, YYYY")
+    );
+  }
+
+  testHeader("moment(i).format('ddd, ll')");
+  for (let i of inputs) {
+    testEqual(moment().format("ddd, ll"), gnoment().format("ddd, ll"));
+  }
+
   const tz = "America/Phoenix";
   testHeader("moment(i).format('MMM D, YYYY - h:mm a')");
   for (let i of inputs) {
@@ -207,3 +252,5 @@ console.log(
 );
 console.log(moment(inputs[0]).utc(), gnoment(inputs[0]).utc());
 console.log(moment(inputs[0]), gnoment(inputs[0]));
+
+console.log(moment().format, gnoment().format);
