@@ -92,9 +92,14 @@ let test = () => {
   }
 
   const tz = "America/Phoenix";
-  testHeader("moment(i).format('MMM D, YYYY - h:mm a')");
+  testHeader("moment(i).tz(tz)");
   for (let i of inputs) {
     testEqual(String(moment(i).tz(tz)), String(gnoment(i).tz(tz)));
+  }
+
+  testHeader("moment.tz(tz)");
+  for (let i of inputs) {
+    testEqual(String(moment.tz(tz)), String(gnoment.tz(tz)));
   }
 
   testHeader("moment(i).format('MMM D, YYYY - h:mm a z')");
@@ -242,6 +247,14 @@ let test = () => {
     String(moment("2025-01-23T07:00:00Z").endOf("day")),
     String(gnoment("2025-01-23T07:00:00Z").endOf("day"))
   );
+
+  testHeader("isValid");
+  testEqual(
+    moment("2025-01-23T07:00:00Z").isValid(),
+    gnoment("2025-01-23T07:00:00Z").isValid()
+  );
+
+  testHeader("Not isValid");
 };
 
 test();

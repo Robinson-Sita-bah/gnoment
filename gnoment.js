@@ -99,9 +99,16 @@ const parseFlexibleDate = (input, timeZone = "UTC") => {
   return res;
 };
 
-gnoment.tz = (date, tz) => {
-  const zoneDateTime = parseFlexibleDate(date, tz);
-  return gnoment(zoneDateTime);
+//Accepts (date, tz) or (tz) params
+gnoment.tz = (...params) => {
+  if (params.length === 2) {
+    const zoneDateTime = parseFlexibleDate(params[0], params[1]);
+    return gnoment(zoneDateTime);
+  }
+
+  if (params.length === 1) {
+    return gnoment().tz(params[0]);
+  }
 };
 
 gnoment.utc = (date) => {
@@ -194,6 +201,13 @@ class Gnoment {
   getOffset = () => {
     return this.convertOffsetToHoursMinutes(this.zonedDateTime.offset);
   };
+
+  isValid() {
+    if (this.zonedDateTime) {
+      return true;
+    }
+    return false;
+  }
 
   //Date Comparisons
   isSame = (date2) => {
