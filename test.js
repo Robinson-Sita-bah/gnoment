@@ -102,6 +102,11 @@ let test = () => {
     testEqual(String(moment.tz(tz)), String(gnoment.tz(tz)));
   }
 
+  testHeader("moment.tz(i, tz)");
+  for (let i of inputs) {
+    testEqual(String(moment.tz(i, tz)), String(gnoment.tz(i, tz)));
+  }
+
   testHeader("moment(i).format('MMM D, YYYY - h:mm a z')");
   for (let i of inputs) {
     testEqual(
