@@ -192,7 +192,7 @@ class Gnoment {
     const sign = totalMinutes >= 0 ? "+" : "-";
     const hours = Math.floor(Math.abs(totalMinutes) / 60);
     const minutes = Math.abs(totalMinutes) % 60;
-    return `${sign}${String(hours).padStart(2, "0")}${String(minutes).padStart(
+    return `${sign}${String(hours).padStart(2, "0")}:${String(minutes).padStart(
       2,
       "0"
     )}`;
@@ -330,6 +330,19 @@ class Gnoment {
     const d = new Date(date);
     let timezoneShort = "";
 
+    const getDateEnding = (day) => {
+      switch (day % 10) {
+        case 1:
+          return "st";
+        case 2:
+          return "nd";
+        case 3:
+          return "rd";
+        default:
+          return "th";
+      }
+    };
+
     // Helper function to get timezone offset in format ±HH:mm
     const getTimezoneOffset = () => {
       return this.convertOffsetToHoursMinutes(this.zonedDateTime.offset);
@@ -358,7 +371,7 @@ class Gnoment {
       DD: d.toLocaleString("en-US", { ...timeOptions, day: "2-digit" }),
       Do: d
         .toLocaleString("en-US", { ...timeOptions, day: "numeric" })
-        .concat("th"),
+        .concat(getDateEnding(d.getDate())),
       D: d.toLocaleString("en-US", { ...timeOptions, day: "numeric" }),
 
       dddd: d.toLocaleString("en-US", { ...timeOptions, weekday: "long" }),
@@ -434,7 +447,7 @@ class Gnoment {
 
       // Timezone
       ZZ: getTimezoneOffset(d, tzUpdated).replace(":", ""),
-      Z: getTimezoneOffset(d, tzUpdated).replace("+0000", "Z"),
+      Z: getTimezoneOffset(d, tzUpdated).replace("+00:00", "Z"),
       z: timezoneShort || Intl.DateTimeFormat().resolvedOptions().timeZone,
       // 'z': d.toLocaleString('en-US', { timeZone: timezone, timeZoneName: 'short' }),
     };
@@ -447,6 +460,10 @@ class Gnoment {
       (match, contents) => contents || formatTokens[match]
     );
   };
+
+  toJSON() {
+    return this.utc().format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+  }
 }
 
 export function gnoment(d) {

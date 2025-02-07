@@ -51,6 +51,11 @@ let test = () => {
     testEqual(moment().format("ddd D"), gnoment().format("ddd D"));
   }
 
+  testHeader("moment(i).format()");
+  for (let i of inputs) {
+    testEqual(moment(i).format(), gnoment(i).format());
+  }
+
   testHeader("moment(i).format('ddd')");
   for (let i of inputs) {
     testEqual(moment().format("ddd"), gnoment().format("ddd"));
@@ -81,14 +86,27 @@ let test = () => {
   testHeader("moment(i).format('MMMM Do, YYYY')");
   for (let i of inputs) {
     testEqual(
-      moment().format("MMMM Do, YYYY"),
-      gnoment().format("MMMM Do, YYYY")
+      moment(i).format("MMMM Do, YYYY"),
+      gnoment(i).format("MMMM Do, YYYY")
     );
   }
 
   testHeader("moment(i).format('ddd, ll')");
   for (let i of inputs) {
-    testEqual(moment().format("ddd, ll"), gnoment().format("ddd, ll"));
+    testEqual(moment(i).format("ddd, ll"), gnoment(i).format("ddd, ll"));
+  }
+
+  testHeader("moment(i).toJSON()");
+  for (let i of inputs) {
+    testEqual(moment(i).toJSON(), gnoment(i).toJSON());
+  }
+
+  testHeader("moment(i).tz('America/Los_Angeles').toJSON()");
+  for (let i of inputs) {
+    testEqual(
+      moment("2025-01-23T07:00:00Z").tz("America/Los_Angeles").toJSON(),
+      gnoment("2025-01-23T07:00:00Z").tz("America/Los_Angeles").toJSON()
+    );
   }
 
   const tz = "America/Phoenix";
