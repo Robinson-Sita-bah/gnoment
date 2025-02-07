@@ -104,8 +104,8 @@ let test = () => {
   testHeader("moment(i).tz('America/Los_Angeles').toJSON()");
   for (let i of inputs) {
     testEqual(
-      moment("2025-01-23T07:00:00Z").tz("America/Los_Angeles").toJSON(),
-      gnoment("2025-01-23T07:00:00Z").tz("America/Los_Angeles").toJSON()
+      moment(i).tz("America/Los_Angeles").toJSON(),
+      gnoment(i).tz("America/Los_Angeles").toJSON()
     );
   }
 
