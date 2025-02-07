@@ -109,6 +109,7 @@ gnoment.tz = (...params) => {
   if (params.length === 1) {
     return gnoment().tz(params[0]);
   }
+  return gnoment(null);
 };
 
 gnoment.utc = (date) => {
@@ -117,7 +118,8 @@ gnoment.utc = (date) => {
 
 class Gnoment {
   constructor(date) {
-    if (!date) {
+    this.zonedDateTime = null;
+    if (date === undefined) {
       this.zonedDateTime = now(getLocalTimeZone());
     } else if (typeof date === "string") {
       const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -142,8 +144,6 @@ class Gnoment {
       this.zonedDateTime = toZoned(date, localTimeZone);
     } else if (date instanceof Gnoment) {
       this.zonedDateTime = date.zonedDateTime;
-    } else {
-      throw new Error("Unhandled input to Gnoment constructor");
     }
   }
 
@@ -177,14 +177,18 @@ class Gnoment {
 
   // Node specific
   [Symbol.for("nodejs.util.inspect.custom")]() {
-    return `Gnoment<${this.format()}>`;
+    if (this.isValid()) return `Gnoment<${this.format()}>`;
+    return "Gnoment<Invalid date>";
   }
 
   toString() {
-    return this.format(
-      "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ",
-      this.zonedDateTime.timeZone
-    );
+    if (this.isValid()) {
+      return this.format(
+        "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ",
+        this.zonedDateTime.timeZone
+      );
+    }
+    return "Invalid date";
   }
 
   convertOffsetToHoursMinutes = (offset) => {
@@ -269,12 +273,14 @@ class Gnoment {
 
   add = (duration, unit) => {
     const unitTemp = this.unitLookup(unit);
-    return gnoment(this.zonedDateTime.add({ [unitTemp]: duration }));
+    this.zonedDateTime = this.zonedDateTime.add({ [unitTemp]: duration });
+    return gnoment(this.zonedDateTime);
   };
 
   subtract = (duration, unit) => {
     const unitTemp = this.unitLookup(unit);
-    return gnoment(this.zonedDateTime.subtract({ [unitTemp]: duration }));
+    this.zonedDateTime = this.zonedDateTime.subtract({ [unitTemp]: duration });
+    return gnoment(this.zonedDateTime);
   };
 
   startOf = (unit) => {
@@ -314,11 +320,13 @@ class Gnoment {
   };
 
   tz = (timezone) => {
-    const z = toZoned(this.zonedDateTime, timezone);
+    const z = this.isValid() ? toZoned(this.zonedDateTime, timezone) : null;
     return gnoment(z);
   };
 
   format = (format, timezone) => {
+    if (!this.isValid()) return "Invalid date";
+
     // Create date object and handle timezone if provided
     let tzUpdated = timezone;
     let formatUpdated = format;
@@ -471,7 +479,10 @@ export function gnoment(d) {
 }
 
 gnoment.unix = (d) => {
-  return new Gnoment(new Date(d * 1000));
+  let dUpdated = d;
+  if (dUpdated === undefined) return new Gnoment(null);
+  if (dUpdated === null) dUpdated = 0;
+  return new Gnoment(new Date(dUpdated * 1000));
 };
 
 gnoment.isGnoment = (date) => {

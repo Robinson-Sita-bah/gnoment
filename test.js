@@ -1,5 +1,5 @@
-import moment from "moment-timezone";
 import gnoment from "./gnoment.js";
+import moment from "moment-timezone";
 import chalk from "chalk";
 
 let inputs = [
@@ -9,8 +9,6 @@ let inputs = [
   "2025-01-22T08:00:00",
   "2025-01-22 08:00:00",
 ];
-
-// "Jan 01, 2025"
 
 let unixinputs = [
   1595007379, // 2020-07-17T13:36:19-04:00 DST
@@ -30,6 +28,12 @@ let testHeader = (h) => {
 };
 
 let test = () => {
+  testHeader("moment(null)");
+  testEqual(String(moment(null)), String(gnoment(null)));
+
+  testHeader("moment(undefined)");
+  testEqual(String(moment(undefined)), String(gnoment(undefined)));
+
   testHeader("moment(i)");
   for (let i of inputs) {
     testEqual(String(moment(i)), String(gnoment(i)));
@@ -54,6 +58,11 @@ let test = () => {
   testHeader("moment(i).format()");
   for (let i of inputs) {
     testEqual(moment(i).format(), gnoment(i).format());
+  }
+
+  testHeader("moment(i).utc().format()");
+  for (let i of inputs) {
+    testEqual(moment(i).utc().format(), gnoment(i).utc().format());
   }
 
   testHeader("moment(i).format('ddd')");
@@ -150,6 +159,21 @@ let test = () => {
   for (let i of unixinputs) {
     testEqual(String(moment.unix(i).utc()), String(gnoment.unix(i).utc()));
   }
+
+  testHeader("moment.unix(undefined)");
+  testEqual(String(moment.unix(undefined)), String(gnoment.unix(undefined)));
+
+  testHeader("moment.unix(undefined).tz('America/Los_Angeles')");
+  testEqual(
+    String(moment.unix(undefined).tz("America/Los_Angeles")),
+    String(gnoment.unix(undefined).tz("America/Los_Angeles"))
+  );
+
+  testHeader("moment.unix(null)");
+  testEqual(String(moment.unix(null)), String(gnoment.unix(null)));
+
+  testHeader("moment.unix(0)");
+  testEqual(String(moment.unix(0)), String(gnoment.unix(0)));
 
   testHeader("moment(i).utc()");
   for (let i of inputs) {
@@ -277,16 +301,29 @@ let test = () => {
     gnoment("2025-01-23T07:00:00Z").isValid()
   );
 
+  testEqual(moment(undefined).isValid(), gnoment(undefined).isValid());
+
   testHeader("Not isValid");
+  testEqual(moment(null).isValid(), gnoment(null).isValid());
+
+  testHeader("Invalid date str");
+
+  testEqual(
+    moment
+      .unix(undefined)
+      .tz("America/Los_Angeles")
+      .format("MM/DD/YYYY [at] hh:mm a z"),
+    gnoment
+      .unix(undefined)
+      .tz("America/Los_Angeles")
+      .format("MM/DD/YYYY [at] hh:mm a z")
+  );
+
+  testHeader("format is a func");
+  testEqual(typeof moment().format, typeof gnoment().format);
 };
 
 test();
 
-console.log(
-  moment(inputs[0]).utc().format(),
-  gnoment(inputs[0]).utc().format()
-);
 console.log(moment(inputs[0]).utc(), gnoment(inputs[0]).utc());
 console.log(moment(inputs[0]), gnoment(inputs[0]));
-
-console.log(moment().format, gnoment().format);
