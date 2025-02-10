@@ -164,6 +164,7 @@ class Gnoment {
   }
 
   utc() {
+    if (!this.isValid()) return new Gnoment(null);
     const utcDateTime = toZoned(this.zonedDateTime, "UTC");
     return gnoment(utcDateTime);
   }
@@ -204,6 +205,10 @@ class Gnoment {
 
   getOffset = () => {
     return this.convertOffsetToHoursMinutes(this.zonedDateTime.offset);
+  };
+
+  clone = () => {
+    return new Gnoment(this.zonedDateTime);
   };
 
   isValid() {
@@ -269,6 +274,11 @@ class Gnoment {
     return momentUnit in this.unitLookupTable
       ? this.unitLookupTable[momentUnit]
       : momentUnit;
+  };
+
+  year = (input) => {
+    this.zonedDateTime = this.zonedDateTime.set({ year: input });
+    return this.zonedDateTime;
   };
 
   add = (duration, unit) => {

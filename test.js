@@ -474,11 +474,21 @@ let test = () => {
 
   testHeader("format is a func");
   testEqual(typeof moment().format, typeof gnoment().format);
+
+  testHeader("moment().clone()");
+  const a = moment();
+  const b = a.clone();
+  a.year(2000);
+
+  const aNew = gnoment();
+  const bNew = aNew.clone();
+  aNew.year(2000);
+
+  testEqual(String(aNew), String(a));
+  testEqual(String(bNew), String(b));
 };
 
 test();
 
 console.log(moment(inputs[0]).utc(), gnoment(inputs[0]).utc());
 console.log(moment(inputs[0]), gnoment(inputs[0]));
-
-console.log(moment(null).subtract(1, "day"), gnoment(null).subtract(1, "day"));
