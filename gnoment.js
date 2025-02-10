@@ -272,18 +272,21 @@ class Gnoment {
   };
 
   add = (duration, unit) => {
+    if (!this.isValid()) return new Gnoment(null);
     const unitTemp = this.unitLookup(unit);
     this.zonedDateTime = this.zonedDateTime.add({ [unitTemp]: duration });
     return gnoment(this.zonedDateTime);
   };
 
   subtract = (duration, unit) => {
+    if (!this.isValid()) return new Gnoment(null);
     const unitTemp = this.unitLookup(unit);
     this.zonedDateTime = this.zonedDateTime.subtract({ [unitTemp]: duration });
     return gnoment(this.zonedDateTime);
   };
 
   startOf = (unit) => {
+    if (!this.isValid()) return new Gnoment(null);
     let res;
     if (unit === "year") {
       let temp = startOfYear(this.zonedDateTime);
@@ -302,6 +305,7 @@ class Gnoment {
   };
 
   endOf = (unit) => {
+    if (!this.isValid()) return new Gnoment(null);
     let res;
     if (unit === "year") {
       let temp = endOfYear(this.zonedDateTime);

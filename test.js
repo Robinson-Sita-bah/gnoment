@@ -251,10 +251,20 @@ let test = () => {
     String(gnoment("2025-01-23T07:00:00Z").subtract(1, "day"))
   );
 
+  testEqual(
+    String(moment(null).subtract(1, "day")),
+    String(gnoment(null).subtract(1, "day"))
+  );
+
   testHeader("Date Arithmetic Tests - add");
   testEqual(
     String(moment("2025-01-23T07:00:00Z").add(1, "day")),
     String(gnoment("2025-01-23T07:00:00Z").add(1, "day"))
+  );
+
+  testEqual(
+    String(moment(null).add(1, "day")),
+    String(gnoment(null).add(1, "day"))
   );
 
   testEqual(
@@ -267,32 +277,175 @@ let test = () => {
     String(gnoment("2025-01-23T07:00:00Z").add(1, "month"))
   );
 
-  testHeader("Date Arithmetic Tests - startOf");
+  testHeader("Date Arithmetic Tests - startOf('year')");
   testEqual(
     String(moment("2025-01-23T07:00:00Z").startOf("year")),
     String(gnoment("2025-01-23T07:00:00Z").startOf("year"))
   );
+
+  testEqual(
+    String(moment(null).startOf("year")),
+    String(gnoment(null).startOf("year"))
+  );
+
+  testEqual(
+    String(moment(null).tz("America/Los_Angeles").startOf("year")),
+    String(gnoment(null).tz("America/Los_Angeles").startOf("year"))
+  );
+
+  testEqual(
+    String(
+      moment(null)
+        .tz("America/Los_Angeles")
+        .startOf("year")
+        .format("YYYY-MM-DD")
+    ),
+    String(
+      gnoment(null)
+        .tz("America/Los_Angeles")
+        .startOf("year")
+        .format("YYYY-MM-DD")
+    )
+  );
+
+  testHeader("Date Arithmetic Tests - startOf('month')");
   testEqual(
     String(moment("2025-01-23T07:00:00Z").startOf("month")),
     String(gnoment("2025-01-23T07:00:00Z").startOf("month"))
   );
+
+  testEqual(
+    String(moment(null).startOf("month")),
+    String(gnoment(null).startOf("month"))
+  );
+
+  testEqual(
+    String(moment(null).tz("America/Los_Angeles").startOf("month")),
+    String(gnoment(null).tz("America/Los_Angeles").startOf("month"))
+  );
+
+  testEqual(
+    String(
+      moment(null)
+        .tz("America/Los_Angeles")
+        .startOf("month")
+        .format("YYYY-MM-DD")
+    ),
+    String(
+      gnoment(null)
+        .tz("America/Los_Angeles")
+        .startOf("month")
+        .format("YYYY-MM-DD")
+    )
+  );
+
+  testHeader("Date Arithmetic Tests - startOf('day')");
+
   testEqual(
     String(moment("2025-01-23T07:00:00Z").startOf("day")),
     String(gnoment("2025-01-23T07:00:00Z").startOf("day"))
   );
 
-  testHeader("Date Arithmetic Tests - endOf");
+  testEqual(
+    String(moment(null).startOf("day")),
+    String(gnoment(null).startOf("day"))
+  );
+
+  testEqual(
+    String(moment(null).tz("America/Los_Angeles").startOf("day")),
+    String(gnoment(null).tz("America/Los_Angeles").startOf("day"))
+  );
+
+  testEqual(
+    String(
+      moment(null).tz("America/Los_Angeles").startOf("day").format("YYYY-MM-DD")
+    ),
+    String(
+      gnoment(null)
+        .tz("America/Los_Angeles")
+        .startOf("day")
+        .format("YYYY-MM-DD")
+    )
+  );
+
+  testHeader("Date Arithmetic Tests - endOf('year')");
   testEqual(
     String(moment("2025-01-23T07:00:00Z").endOf("year")),
     String(gnoment("2025-01-23T07:00:00Z").endOf("year"))
   );
+
+  testEqual(
+    String(moment(null).endOf("year")),
+    String(gnoment(null).endOf("year"))
+  );
+
+  testEqual(
+    String(moment(null).tz("America/Los_Angeles").endOf("year")),
+    String(gnoment(null).tz("America/Los_Angeles").endOf("year"))
+  );
+
+  testEqual(
+    String(
+      moment(null).tz("America/Los_Angeles").endOf("year").format("YYYY-MM-DD")
+    ),
+    String(
+      gnoment(null).tz("America/Los_Angeles").endOf("year").format("YYYY-MM-DD")
+    )
+  );
+
+  testHeader("Date Arithmetic Tests - endOf('month')");
+
   testEqual(
     String(moment("2025-01-23T07:00:00Z").endOf("month")),
     String(gnoment("2025-01-23T07:00:00Z").endOf("month"))
   );
+
+  testEqual(
+    String(moment(null).endOf("month")),
+    String(gnoment(null).endOf("month"))
+  );
+
+  testEqual(
+    String(moment(null).tz("America/Los_Angeles").endOf("month")),
+    String(gnoment(null).tz("America/Los_Angeles").endOf("month"))
+  );
+
+  testEqual(
+    String(
+      moment(null).tz("America/Los_Angeles").endOf("month").format("YYYY-MM-DD")
+    ),
+    String(
+      gnoment(null)
+        .tz("America/Los_Angeles")
+        .endOf("month")
+        .format("YYYY-MM-DD")
+    )
+  );
+
+  testHeader("Date Arithmetic Tests - endOf('day')");
+
   testEqual(
     String(moment("2025-01-23T07:00:00Z").endOf("day")),
     String(gnoment("2025-01-23T07:00:00Z").endOf("day"))
+  );
+
+  testEqual(
+    String(moment(null).endOf("day")),
+    String(gnoment(null).endOf("day"))
+  );
+
+  testEqual(
+    String(moment(null).tz("America/Los_Angeles").endOf("day")),
+    String(gnoment(null).tz("America/Los_Angeles").endOf("day"))
+  );
+
+  testEqual(
+    String(
+      moment(null).tz("America/Los_Angeles").endOf("day").format("YYYY-MM-DD")
+    ),
+    String(
+      gnoment(null).tz("America/Los_Angeles").endOf("day").format("YYYY-MM-DD")
+    )
   );
 
   testHeader("isValid");
@@ -327,3 +480,5 @@ test();
 
 console.log(moment(inputs[0]).utc(), gnoment(inputs[0]).utc());
 console.log(moment(inputs[0]), gnoment(inputs[0]));
+
+console.log(moment(null).subtract(1, "day"), gnoment(null).subtract(1, "day"));
