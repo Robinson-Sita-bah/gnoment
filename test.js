@@ -92,6 +92,12 @@ let test = () => {
     testEqual(moment().format("ll"), gnoment().format("ll"));
   }
 
+  testHeader("moment(i).format('l')");
+  testEqual(
+    moment("2025-02-01").format("l"),
+    gnoment("2025-02-01").format("l")
+  );
+
   testHeader("moment(i).format('MMMM Do, YYYY')");
   for (let i of inputs) {
     testEqual(
@@ -154,6 +160,12 @@ let test = () => {
       testEqual(String(moment.tz(i, tz)), String(gnoment.tz(i, tz)));
     }
   }
+
+  testHeader("moment('2025-01-01').valueOf()");
+  testEqual(gnoment("2025-01-01").valueOf(), moment("2025-01-01").valueOf());
+
+  testHeader("moment().unix()");
+  testEqual(gnoment().unix(), moment().unix());
 
   testHeader("moment.unix(i).utc()");
   for (let i of unixinputs) {

@@ -172,6 +172,15 @@ class Gnoment {
     return gnoment(utcDateTime);
   }
 
+  unix() {
+    const dUpdated = Math.floor(this.zonedDateTime.toDate().getTime() / 1000);
+    return dUpdated;
+  }
+
+  valueOf() {
+    return gnoment(this.zonedDateTime).unix() * 1000;
+  }
+
   normalize(s) {
     let sUpdated = s;
     sUpdated = s.replace(/\+00:00\[UTC\]/g, "Z");
@@ -499,6 +508,7 @@ class Gnoment {
     // Replace tokens with actual values
     formatUpdated = formatUpdated.replace("LL", "MMMM D, YYYY");
     formatUpdated = formatUpdated.replace("ll", "MMM D, YYYY");
+    formatUpdated = formatUpdated.replace("l", "M/D/YYYY");
     return formatUpdated.replace(
       /\[([^\]]+)\]|YYYY|YY|MMMM|MMM|MM|M|DD|Do|D|dddd|ddd|HH|H|hh|h|mm|m|ss|s|SSS|A|a|ZZ|Z|z/g,
       (match, contents) => contents || formatTokens[match]
