@@ -187,6 +187,32 @@ let test = () => {
   );
 
   // Date Comparison Tests
+  testHeader("Date Comparison Tests - isBetween");
+
+  //Exclusive
+  testEqual(
+    moment("2010-10-20").isBetween("2010-10-20", "2010-10-25"),
+    gnoment("2010-10-20").isBetween("2010-10-20", "2010-10-25")
+  );
+
+  //Inclusive Left -lower bound included, upper excluded
+  testEqual(
+    moment("2010-10-20").isBetween("2010-10-20", "2010-10-25", null, "[)"),
+    gnoment("2010-10-20").isBetween("2010-10-20", "2010-10-25", null, "[)")
+  );
+
+  //Inclusive Right
+  testEqual(
+    moment("2010-10-20").isBetween("2010-10-20", "2010-10-25", null, "(]"),
+    gnoment("2010-10-20").isBetween("2010-10-20", "2010-10-25", null, "(]")
+  );
+
+  //Inclusive
+  testEqual(
+    moment("2010-10-20").isBetween("2010-10-20", "2010-10-25", null, "[]"),
+    gnoment("2010-10-20").isBetween("2010-10-20", "2010-10-25", null, "[]")
+  );
+
   testHeader("Date Comparison Tests - isSame");
   testEqual(
     moment("2025-01-22T07:00:00Z").isSame(moment("2025-01-22T07:00:00Z")),
@@ -486,9 +512,28 @@ let test = () => {
 
   testEqual(String(aNew), String(a));
   testEqual(String(bNew), String(b));
+
+  testHeader("moment().year() returns number and str when templating");
+
+  testEqual(moment().year(), gnoment().year());
+  testEqual(`${moment().year()}`, `${gnoment().year()}`);
+
+  testHeader("moment('0001-01-01T00:00:00Z') works with zero date");
+
+  testEqual(
+    moment("0001-01-01T00:00:00Z").utc().format("YYYY-MM-DD"),
+    gnoment("0001-01-01T00:00:00Z").utc().format("YYYY-MM-DD")
+  );
+
+  testEqual(
+    moment("0001-01-01T00:00:00Z").utc().format("YY-MM-DD"),
+    gnoment("0001-01-01T00:00:00Z").utc().format("YY-MM-DD")
+  );
+
+  testHeader("moment.tz.setDefault('UTC')");
+  moment.tz.setDefault("UTC");
+  gnoment.tz.setDefault("UTC");
+  testEqual(String(moment()), String(gnoment()));
 };
 
 test();
-
-console.log(moment(inputs[0]).utc(), gnoment(inputs[0]).utc());
-console.log(moment(inputs[0]), gnoment(inputs[0]));

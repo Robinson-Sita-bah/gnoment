@@ -112,6 +112,12 @@ gnoment.tz = (...params) => {
   return gnoment(null);
 };
 
+let defaultTimeZone = getLocalTimeZone();
+
+gnoment.tz.setDefault = (tz) => {
+  defaultTimeZone = tz;
+};
+
 gnoment.utc = (date) => {
   return gnoment(date).utc();
 };
@@ -120,14 +126,12 @@ class Gnoment {
   constructor(date) {
     this.zonedDateTime = null;
     if (date === undefined) {
-      this.zonedDateTime = now(getLocalTimeZone());
+      this.zonedDateTime = now(defaultTimeZone);
     } else if (typeof date === "string") {
-      const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const dateObj = parseFlexibleDate(date, localTimeZone);
+      const dateObj = parseFlexibleDate(date, defaultTimeZone);
       this.zonedDateTime = toCalendarDateTime(dateObj);
-      this.zonedDateTime = toZoned(this.zonedDateTime, localTimeZone);
+      this.zonedDateTime = toZoned(this.zonedDateTime, defaultTimeZone);
     } else if (date instanceof Date) {
-      const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const dateTime = new CalendarDateTime(
         date.getFullYear(),
         date.getMonth() + 1,
@@ -136,12 +140,11 @@ class Gnoment {
         date.getMinutes(),
         date.getSeconds()
       );
-      this.zonedDateTime = toZoned(dateTime, localTimeZone);
+      this.zonedDateTime = toZoned(dateTime, defaultTimeZone);
     } else if (date instanceof ZonedDateTime) {
       this.zonedDateTime = date;
     } else if (date instanceof CalendarDate) {
-      const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      this.zonedDateTime = toZoned(date, localTimeZone);
+      this.zonedDateTime = toZoned(date, defaultTimeZone);
     } else if (date instanceof Gnoment) {
       this.zonedDateTime = date.zonedDateTime;
     }
@@ -239,8 +242,24 @@ class Gnoment {
     return this.zonedDateTime.compare(date2.zonedDateTime) > 0;
   };
 
-  isBetween = () => {
-    //Code here
+  isBetween = (start, end, unit, inclusivity = "()") => {
+    let currentUpdated = this;
+    let startUpdated = gnoment(start);
+    let endUpdated = gnoment(end);
+    if (unit) {
+      currentUpdated = gnoment(this.zonedDateTime).startOf(unit);
+      startUpdated = startUpdated.zonedDateTime.startOf(unit);
+      endUpdated = endUpdated.zonedDateTime.startOf(unit);
+    }
+    const afterStart =
+      inclusivity[0] === "["
+        ? currentUpdated.isSameOrAfter(startUpdated)
+        : currentUpdated.isAfter(startUpdated);
+    const beforeEnd =
+      inclusivity[1] === "]"
+        ? currentUpdated.isSameOrBefore(endUpdated)
+        : currentUpdated.isBefore(endUpdated);
+    return afterStart && beforeEnd;
   };
 
   //Date Calcs
@@ -278,7 +297,7 @@ class Gnoment {
 
   year = (input) => {
     this.zonedDateTime = this.zonedDateTime.set({ year: input });
-    return this.zonedDateTime;
+    return Number(gnoment(this.zonedDateTime).format("YYYY"));
   };
 
   add = (duration, unit) => {
@@ -378,9 +397,13 @@ class Gnoment {
     const tzNamePart = parts.find((part) => part.type === "timeZoneName");
     timezoneShort = tzNamePart ? tzNamePart.value : "";
     const timeOptions = tzUpdated ? { timeZone: tzUpdated } : {};
+    const YYYYFormat = d.toLocaleString("en-US", {
+      ...timeOptions,
+      year: "numeric",
+    });
     const formatTokens = {
       // Year
-      YYYY: d.toLocaleString("en-US", { ...timeOptions, year: "numeric" }),
+      YYYY: YYYYFormat.length === 1 ? YYYYFormat.padStart(4, "0") : YYYYFormat,
       YY: d.toLocaleString("en-US", { ...timeOptions, year: "2-digit" }),
 
       // Month
@@ -470,8 +493,7 @@ class Gnoment {
       // Timezone
       ZZ: getTimezoneOffset(d, tzUpdated).replace(":", ""),
       Z: getTimezoneOffset(d, tzUpdated).replace("+00:00", "Z"),
-      z: timezoneShort || Intl.DateTimeFormat().resolvedOptions().timeZone,
-      // 'z': d.toLocaleString('en-US', { timeZone: timezone, timeZoneName: 'short' }),
+      z: timezoneShort || defaultTimeZone,
     };
 
     // Replace tokens with actual values
