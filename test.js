@@ -236,6 +236,10 @@ let test = () => {
     gnoment().isSame(gnoment("2025-01-22T07:00:00Z"))
   );
 
+  testHeader("Date Comparison Tests - isSame handles invalid date");
+
+  testEqual(gnoment(null)?.isSame(gnoment()), moment(null)?.isSame(moment()));
+
   testHeader("Date Comparison Tests - isSameOrBefore");
   testEqual(
     moment("2025-01-21T07:00:00Z").isSameOrBefore(
@@ -244,6 +248,13 @@ let test = () => {
     gnoment("2025-01-21T07:00:00Z").isSameOrBefore(
       gnoment("2025-01-22T07:00:00Z")
     )
+  );
+
+  testHeader("Date Comparison Tests - isSameOrBefore handles invalid date");
+
+  testEqual(
+    gnoment(null)?.isSameOrBefore(gnoment()),
+    moment(null)?.isSameOrBefore(moment())
   );
 
   testHeader("Date Comparison Tests - isSameOrAfter");
@@ -256,11 +267,20 @@ let test = () => {
     )
   );
 
+  testHeader("Date Comparison Tests - isSameOrAfter handles invalid date");
+  testEqual(
+    gnoment(null)?.isSameOrAfter(gnoment()),
+    moment(null)?.isSameOrAfter(moment())
+  );
+
   testHeader("Date Comparison Tests - isAfter");
   testEqual(
     moment("2025-01-23T07:00:00Z").isAfter(moment("2025-01-22T07:00:00Z")),
     gnoment("2025-01-23T07:00:00Z").isAfter(gnoment("2025-01-22T07:00:00Z"))
   );
+
+  testHeader("Date Comparison Tests - isAfter handles invalid date");
+  testEqual(gnoment(null)?.isAfter(gnoment()), moment(null)?.isAfter(moment()));
 
   testHeader("Date Arithmetic Tests - diff");
   testEqual(

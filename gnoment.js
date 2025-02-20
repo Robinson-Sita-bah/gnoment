@@ -232,26 +232,32 @@ class Gnoment {
 
   //Date Comparisons
   isSame = (date2) => {
+    if (!this.isValid()) return false;
     return this.zonedDateTime.compare(date2.zonedDateTime) === 0;
   };
 
   isSameOrBefore = (date2) => {
+    if (!this.isValid()) return false;
     return this.zonedDateTime.compare(date2.zonedDateTime) <= 0;
   };
 
   isBefore = (date2) => {
+    if (!this.isValid()) return false;
     return this.zonedDateTime.compare(date2.zonedDateTime) < 0;
   };
 
   isSameOrAfter = (date2) => {
+    if (!this.isValid()) return false;
     return this.zonedDateTime.compare(date2.zonedDateTime) >= 0;
   };
 
   isAfter = (date2) => {
+    if (!this.isValid()) return false;
     return this.zonedDateTime.compare(date2.zonedDateTime) > 0;
   };
 
   isBetween = (start, end, unit, inclusivity = "()") => {
+    if (!this.isValid()) return false;
     let currentUpdated = this;
     let startUpdated = gnoment(start);
     let endUpdated = gnoment(end);
